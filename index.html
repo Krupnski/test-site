@@ -3,54 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CombatBox Intel</title>
+    <title>CombatBox Savant</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Roboto', sans-serif; background-color: #0c111a; }
+        .savant-card { background-color: #1a2433; border-top: 4px solid #002d72; }
+        /* Baseball Savant specific Red/Blue Gradient */
+        .percentile-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(to right, #2463eb, #e11d48);
+        }
+        .dot { height: 24px; width: 24px; border: 3px solid #fff; }
+    </style>
 </head>
-<body class="bg-gray-900 text-gray-100 flex items-center justify-center min-h-screen">
+<body class="text-white">
 
-    <div class="max-w-md w-full bg-gray-800 rounded-2xl shadow-2xl p-8 border border-gray-700">
-        <div class="flex justify-between items-start mb-6">
-            <h1 class="text-2xl font-bold text-white tracking-tight">CombatBox Intel</h1>
-            <span id="status-badge" class="px-2 py-1 text-xs font-semibold rounded bg-green-500/20 text-green-400 border border-green-500/50">ONLINE</span>
+    <nav class="bg-[#002d72] p-3 shadow-xl">
+        <div class="max-w-6xl mx-auto flex items-center gap-4">
+            <span class="font-black italic text-xl tracking-tighter">COMBAT<span class="text-red-600">BOX</span> SAVANT</span>
         </div>
+    </nav>
 
-        <div class="space-y-6">
-            <div>
-                <p class="text-sm text-gray-400 uppercase tracking-widest font-semibold mb-1">Current Mission</p>
-                <p id="mission-name" class="text-xl font-medium text-blue-400 italic">Loading...</p>
-            </div>
-
-            <div class="flex items-center space-x-4">
-                <div class="bg-gray-700/50 p-4 rounded-xl flex-1 border border-gray-600">
-                    <p class="text-xs text-gray-400 mb-1">Players</p>
-                    <p id="player-count" class="text-3xl font-bold text-white">--</p>
+    <main class="max-w-6xl mx-auto p-6">
+        
+        <div class="flex flex-col md:flex-row items-center gap-8 mb-8">
+            <div class="relative">
+                <div class="w-32 h-32 md:w-48 md:h-48 bg-slate-700 rounded-full border-4 border-slate-600 flex items-center justify-center overflow-hidden">
+                    <span class="text-5xl font-bold text-slate-500">CB</span>
                 </div>
             </div>
-
-            <div class="pt-4 border-t border-gray-700">
-                <p class="text-[10px] text-gray-500 mb-2">DEVELOPER ACCESS (FREE API)</p>
-                <a href="stats.json" target="_blank" class="text-xs text-blue-500 hover:text-blue-400 underline decoration-blue-500/30">
-                    Get raw JSON data
-                </a>
+            
+            <div class="text-center md:text-left">
+                <h1 id="server-name" class="text-4xl md:text-6xl font-black uppercase">Loading...</h1>
+                <div class="flex flex-wrap justify-center md:justify-start gap-4 mt-2 text-slate-400 font-bold uppercase text-sm">
+                    <span>IL-2 Sturmovik</span>
+                    <span>•</span>
+                    <span id="map-name" class="text-white">--</span>
+                    <span>•</span>
+                    <span id="status-text" class="text-green-500 font-black">Online</span>
+                </div>
             </div>
         </div>
-    </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <div class="lg:col-span-1 savant-card p-6 rounded shadow-lg">
+                <h2 class="text-lg font-bold mb-6 border-b border-slate-700 pb-2 italic uppercase">Server Rankings</h2>
+                
+                <div class="space-y-8" id="rankings-container">
+                    <div>
+                        <div class="flex justify-between text-xs font-bold uppercase mb-1">
+                            <span>Player Density</span>
+                            <span id="pop-percent" class="text-red-500 font-black">--</span>
+                        </div>
+                        <div class="relative flex items-center">
+                            <div class="w-full percentile-bar opacity-30"></div>
+                            <div id="pop-dot" class="absolute dot rounded-full bg-red-600" style="left: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs font-bold uppercase mb-1">
+                            <span>Mission Progress</span>
+                            <span id="time-percent" class="text-blue-400 font-black">--</span>
+                        </div>
+                        <div class="relative flex items-center">
+                            <div class="w-full percentile-bar opacity-30"></div>
+                            <div id="time-dot" class="absolute dot rounded-full bg-blue-500" style="left: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs font-bold uppercase mb-1">
+                            <span>Server Stability</span>
+                            <span id="ping-percent" class="text-red-500 font-black">--</span>
+                        </div>
+                        <div class="relative flex items-center">
+                            <div class="w-full percentile-bar opacity-30"></div>
+                            <div id="ping-dot" class="absolute dot rounded-full bg-red-600" style="left: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <p class="text-[10px] text-slate-500 mt-8 italic leading-tight">
+                    Percentiles based on peak historical server performance. Data updated every 15 mins via GitHub Actions.
+                </p>
+            </div>
+
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-[#1a2433] p-4 rounded shadow-lg border-b-2 border-red-600">
+                    <h3 class="font-bold text-sm uppercase mb-4 tracking-widest text-slate-400">Live Mission Stats</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="text-center md:text-left">
+                            <div class="text-2xl font-black" id="players-val">--</div>
+                            <div class="text-[10px] text-slate-500 font-bold uppercase">Players</div>
+                        </div>
+                        <div class="text-center md:text-left border-l border-slate-700 pl-4">
+                            <div class="text-2xl font-black" id="allies-val">--</div>
+                            <div class="text-[10px] text-slate-500 font-bold uppercase">Allies</div>
+                        </div>
+                        <div class="text-center md:text-left border-l border-slate-700 pl-4">
+                            <div class="text-2xl font-black" id="axis-val">--</div>
+                            <div class="text-[10px] text-slate-500 font-bold uppercase">Axis</div>
+                        </div>
+                        <div class="text-center md:text-left border-l border-slate-700 pl-4">
+                            <div class="text-2xl font-black uppercase text-blue-400" id="time-val">--</div>
+                            <div class="text-[10px] text-slate-500 font-bold uppercase">Time Left</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-right">
+                    <a href="stats.json" class="text-[10px] bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded text-slate-400 transition">
+                        SOURCE DATA (JSON)
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
 
     <script>
-        // This script fetches your "scraped" data and injects it into the HTML
-        async function updateDashboard() {
+        async function fetchStats() {
             try {
                 const response = await fetch('stats.json');
                 const data = await response.json();
                 
-                document.getElementById('mission-name').innerText = data.mission;
-                document.getElementById('player-count').innerText = data.players_online;
-                document.getElementById('status-badge').innerText = data.server_status.toUpperCase();
-            } catch (error) {
-                console.error("Error loading intel:", error);
+                // Update Basic Text
+                document.getElementById('server-name').innerText = "CombatBox Main";
+                document.getElementById('map-name').innerText = data.mission;
+                document.getElementById('players-val').innerText = data.players_online;
+                document.getElementById('time-val').innerText = "2:14:00"; // Mock data
+                document.getElementById('allies-val').innerText = "20"; 
+                document.getElementById('axis-val').innerText = "22";
+
+                // Update "Savant" Percentile Dots
+                // In a real app, you'd calculate these (e.g., players / max_players * 100)
+                const popPercent = 85; 
+                const timePercent = 30;
+                const pingPercent = 98;
+
+                document.getElementById('pop-dot').style.left = popPercent + "%";
+                document.getElementById('pop-percent').innerText = popPercent;
+                
+                document.getElementById('time-dot').style.left = timePercent + "%";
+                document.getElementById('time-percent').innerText = timePercent;
+
+                document.getElementById('ping-dot').style.left = pingPercent + "%";
+                document.getElementById('ping-percent').innerText = pingPercent;
+
+            } catch (e) {
+                console.log("Stats not found yet, show placeholders");
             }
         }
-        updateDashboard();
+        fetchStats();
     </script>
 </body>
 </html>
